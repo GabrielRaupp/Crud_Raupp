@@ -4,7 +4,7 @@ const bcrypt = require('bcryptjs');
 const createUser = async (username, password, role = 'user') => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
-    
+
     return new Promise((resolve, reject) => {
         const query = 'INSERT INTO users (username, password, role) VALUES (?, ?, ?)';
         connection.query(query, [username, hashedPassword, role], (err, results) => {
@@ -34,8 +34,19 @@ const findUserById = (id) => {
     });
 };
 
+const findAllUsers = () => {
+    return new Promise((resolve, reject) => {
+        const query = 'SELECT * FROM users';
+        connection.query(query, (err, results) => {
+            if (err) return reject(err);
+            resolve(results);
+        });
+    });
+};
+
 module.exports = {
     createUser,
     findUserByUsername,
     findUserById,
+    findAllUsers
 };

@@ -2,37 +2,70 @@ const User = require('../models/userModel');
 
 exports.getAllUsers = async (req, res) => {
     try {
-        const users = await User.find();
-        res.render('users', { users });
+        const users = await User.findAllUsers(); 
+        res.render('index', { users });
     } catch (err) {
         res.status(500).send(err.message);
     }
 };
 
 exports.searchUsers = async (req, res) => {
-    // Adicione sua lógica de busca de usuários aqui
+    try {
+        const searchQuery = req.query.search || ''; 
+        const users = await User.searchUsers(searchQuery); 
+        res.json({ users });
+    } catch (err) {
+        res.status(500).send(err.message);
+    }
 };
 
 exports.renderCreateForm = (req, res) => {
-    res.render('createUser');
+    res.render('create'); 
 };
 
 exports.createUser = async (req, res) => {
-    // Adicione sua lógica de criação de usuários aqui
+    try {
+        const { username, password, role } = req.body; o
+        await User.createUser(username, password, role);
+        res.redirect('/users'); 
+    } catch (err) {
+        res.status(500).send(err.message);
+    }
 };
 
 exports.getUserById = async (req, res) => {
-    // Adicione sua lógica para obter um usuário pelo ID
+    try {
+        const user = await User.findUserById(req.params.id);
+        res.render('userDetails', { user });
+    } catch (err) {
+        res.status(500).send(err.message);
+    }
 };
 
 exports.renderEditForm = async (req, res) => {
-    // Adicione sua lógica para renderizar o formulário de edição
+    try {
+        const user = await User.findUserById(req.params.id); 
+        res.render('edit', { user });
+    } catch (err) {
+        res.status(500).send(err.message);
+    }
 };
 
 exports.updateUser = async (req, res) => {
-    // Adicione sua lógica de atualização de usuários aqui
+    try {
+        const { username, password, role } = req.body;
+        await User.updateUser(req.params.id, username, password, role);
+        res.redirect('/users'); 
+    } catch (err) {
+        res.status(500).send(err.message);
+    }
 };
 
 exports.deleteUser = async (req, res) => {
-    // Adicione sua lógica de exclusão de usuários aqui
+    try {
+        await User.deleteUser(req.params.id);
+        res.redirect('/users'); 
+    } catch (err) {
+        res.status(500).send(err.message);
+    }
 };
